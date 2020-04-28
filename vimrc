@@ -1,6 +1,8 @@
 let mapleader=" "
 
 syntax on
+set scrolloff=5
+set relativenumber
 set tabstop=4
 set softtabstop=4
 set shiftwidth=4
@@ -26,6 +28,8 @@ inoremap ( ()<ESC>i
 inoremap [ []<ESC>i
 au Filetype cpp inoremap { {<CR>}<ESC>i
 inoremap { {}<ESC>i
+
+
 map S :w<CR>
 map Q :q<CR>
 map R :source $MYVIMRC<CR>
@@ -39,33 +43,40 @@ map == $
 map -- 0
 map O :vertical resize-5<CR>
 map P :vertical resize+5<CR>
-
 map tu :tabe<CR>
 map tn :-tabnext<CR>
 map tb :+tabnext<CR>
 
 call plug#begin('~/.vim/plugged')
-Plug 'Chiel92/vim-autoformat'
 Plug 'vim-airline/vim-airline'
 Plug 'connorholyday/vim-snazzy'
 Plug 'godlygeek/tabular'
 Plug 'scrooloose/nerdtree'
 Plug 'kien/rainbow_parentheses.vim'
-Plug 'davidhalter/jedi-vim'
 Plug 'Valloric/YouCompleteMe'
-Plug 'godlygeek/tabular' 
-Plug 'plasticboy/vim-markdown'
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 Plug 'mzlogin/vim-markdown-toc'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
+Plug 'flazz/vim-colorschemes'
+Plug 'preservim/nerdcommenter'
+Plug 'vim-syntastic/syntastic'
+Plug 'nvie/vim-flake8'
+Plug 'Chiel92/vim-autoformat'
+Plug 'w0rp/ale'
+Plug 'sukima/xmledit'
 call plug#end()
 
+"plug - nerdcommenter
+
+
+
+
+" plug - snazzy
 let g:SnazzyTransparent = 0.5
-color snazzy
-
+colorscheme gruvbox 
 let g:python3_host_prog = '/usr/local/bin/'
-
+" python setting
 let python_highlight_all=1
 au Filetype python set tabstop=4
 au Filetype python set softtabstop=4
@@ -75,10 +86,10 @@ au Filetype python set expandtab
 au Filetype python set fileformat=unix
 autocmd Filetype python set foldmethod=indent
 autocmd Filetype python set foldlevel=99
-
+" plug - nerdtree
 nnoremap <F3> :NERDTreeToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-
+" compile and run
 map <F5> :call CompileRunGcc()<CR>
 func! CompileRunGcc()
         exec "w"
@@ -106,13 +117,7 @@ func! CompileRunGcc()
                 exec "!firefox %.html &"
         endif
 endfunc
-
-nnoremap <F6> :Autoformat<CR>
-let g:autoformat_autoindent = 0
-let g:autoformat_retab = 0
-let g:autoformat_remove_trailing_spaces = 0
-let g:autoformat_verbosemode = 1
-
+" plug - rainbow
 let g:rbpt_colorpairs = [
                         \ ['brown',       'RoyalBlue3'],
                         \ ['Darkblue',    'SeaGreen3'],
@@ -142,31 +147,28 @@ let g:ale_fix_on_save = 1
 let g:ale_completion_enabled = 1
 let g:ale_sign_column_always = 1
 let g:airline#extensions#ale#enabled = 1
-" YouCompleteMe
-" 开启自动语义补全
+" plug - YouCompleteMe
 let g:ycm_semantic_triggers =  {
-\ 'c,cpp,java,go,erlang,perl': ['re!\w{2}'],
+\ 'c,cpp,java,python,go,erlang,perl': ['re!\w{2}'],
 \ 'cs,lua,javascript': ['re!\w{2}'],
 \ }
-" 更改补全面板的颜色
 highlight PMenu ctermfg=0 ctermbg=255 guifg=black guibg=Grey93
 highlight PMenuSel ctermfg=255 ctermbg=0 guifg=Grey93 guibg=black
-" 禁止自动弹出函数原型窗口
 let g:ycm_add_preview_to_completeopt = 0
 let g:ycm_key_list_stop_completion = ['<CR>']
-" 设置白名单，禁止名单以外的文件格式使用
 let g:ycm_filetype_whitelist = {
 \ "c":1,
 \ "cpp":1,
 \ "objc":1,
 \ "sh":1,
+\ "python":1,
 \ "zsh":1,
 \ "zimbu":1,
 \ }
 " Plug - markdown-preview
 " set to 1, nvim will open the preview window after entering the markdown buffer
 " default: 0
-let g:mkdp_auto_start = 1
+let g:mkdp_auto_start = 1 
 
 " set to 1, the nvim will auto close current preview window when change
 " from markdown buffer to another buffer
@@ -234,6 +236,7 @@ let g:mkdp_preview_options = {
 
 " use a custom markdown style must be absolute path
 " like '/Users/username/markdown.css' or expand('~/markdown.css')
+"let g:mkdp_markdown_css = '/Users/wallance/.vim/plugged/markdown-preview.nvim/css/Markdown.css'
 let g:mkdp_markdown_css = ''
 
 " use a custom highlight style must absolute path
@@ -243,9 +246,9 @@ let g:mkdp_highlight_css = ''
 " use a custom port to start server or random for empty
 let g:mkdp_port = ''
 
-" preview page title
+" plug - markdown preview page title
 " ${name} will be replace with the file name
-let g:mkdp_page_title = '「${name}」'
+let g:mkdp_page_title = '${name}'
 " plug - ultisnips
 "设置tab键为触发键
 let g:UltiSnipsExpandTrigger = '<c-j>'
@@ -255,6 +258,8 @@ let g:UltiSnipsJumpForwardTrigger = '<c-k>'
 let g:UltiSnipsJumpBackwardTrigger = '<c-h>'
 "设置打开配置文件时为垂直打开
 let g:UltiSnipsEditSplit="vertical"
+
+" setting - ranger
 
 function! RangeChooser()
 	let temp = tempname()
@@ -280,4 +285,29 @@ function! RangeChooser()
 endfunction
 command! -bar RangerChooser call RangeChooser()
 nnoremap <leader>r :<c-u>RangerChooser<CR>
-			
+
+" plug - syntastic
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 0 
+let g:syntastic_check_on_wq = 0
+let g:syntastic_enable_signs = 1
+let g:syntastic_error_symbol = '✗'
+let g:syntastic_warning_symbol='►'
+let g:syntastic_enable_highlighting=1
+let g:syntastic_python_checkers = ['pyflakes']
+
+" plug - autoformat
+noremap <F6> :Autoformat<CR>
+au BufWrite * :Autoformat
+
+let g:autoformat_autoindent = 0
+let g:autoformat_retab = 0
+let g:autoformat_remove_trailing_spaces = 0
+
+" plug - flake8
+noremap <LEADER>u :call flake8#Flake8UnplaceMarkers()
